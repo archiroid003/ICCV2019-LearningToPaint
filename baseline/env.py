@@ -36,16 +36,23 @@ class Paint:
         # CelebA
         global train_num, test_num
         for i in range(200000):
-            img_id = '%06d' % (i + 1)
+            # img_id = '%06d' % (i + 1)
+            # img_id = str(i+1)
+            img_id = '%05d' % (i + 1)
             try:
-                img = cv2.imread('./data/img_align_celeba/' + img_id + '.jpg', cv2.IMREAD_UNCHANGED)
+                # img = cv2.imread('./data/img_align_celeba/' + img_id + '.jpg', cv2.IMREAD_UNCHANGED)
+                # img = cv2.imread('./data/mnist/' + img_id + '.png')
+                img = cv2.imread('./data/kkanji/train-images-idx3-ubyte_folder/' + img_id + '.png')
                 img = cv2.resize(img, (width, width))
+                # print(img.shape)
                 if i > 2000:                
                     train_num += 1
                     img_train.append(img)
                 else:
                     test_num += 1
                     img_test.append(img)
+            except:
+                break
             finally:
                 if (i + 1) % 10000 == 0:                    
                     print('loaded {} images'.format(i + 1))
@@ -59,6 +66,7 @@ class Paint:
         if not test:
             img = aug(img)
         img = np.asarray(img)
+
         return np.transpose(img, (2, 0, 1))
     
     def reset(self, test=False, begin_num=False):

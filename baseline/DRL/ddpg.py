@@ -21,18 +21,30 @@ coord = coord.to(device)
 criterion = nn.MSELoss()
 
 Decoder = FCN()
-Decoder.load_state_dict(torch.load('../renderer.pkl'))
+# Decoder.load_state_dict(torch.load('../renderer.pkl'))
+Decoder.load_state_dict(torch.load('model/renderer.pkl'))
 
 def decode(x, canvas): # b * (10 + 3)
+    # x = x.view(-1, 10 + 3)
     x = x.view(-1, 10 + 3)
-    stroke = 1 - Decoder(x[:, :10])
+    # draw only toumeido 1
+    # x[:, 8:10] = 0.9
+    # print(x[:, 8:10])
+    # stroke = 1 - Decoder(x[:, :10])
+    stroke = 1 - Decoder(x[:, :8])
     stroke = stroke.view(-1, 128, 128, 1)
-    color_stroke = stroke * x[:, -3:].view(-1, 1, 1, 3)
+    # draw only white
+    color_stroke = stroke * torch.ones(x[:, -3:].shape, device=device).view(-1, 1, 1, 3)
+    # color_stroke = stroke * x[:, -3:].view(-1, 1, 1, 3)
+
     stroke = stroke.permute(0, 3, 1, 2)
     color_stroke = color_stroke.permute(0, 3, 1, 2)
-    stroke = stroke.view(-1, 5, 1, 128, 128)
-    color_stroke = color_stroke.view(-1, 5, 3, 128, 128)
-    for i in range(5):
+    # stroke = stroke.view(-1, 5, 1, 128, 128)
+    stroke = stroke.view(-1, 1, 1, 128, 128)
+    # color_stroke = color_stroke.view(-1, 5, 3, 128, 128)
+    color_stroke = color_stroke.view(-1, 1, 3, 128, 128)
+    # for i in range(5):
+    for i in range(1):
         canvas = canvas * (1 - stroke[:, i]) + color_stroke[:, i]
     return canvas
 
@@ -48,8 +60,10 @@ class DDPG(object):
         self.env_batch = env_batch
         self.batch_size = batch_size        
 
-        self.actor = ResNet(9, 18, 65) # target, canvas, stepnum, coordconv 3 + 3 + 1 + 2
-        self.actor_target = ResNet(9, 18, 65)
+        # self.actor = ResNet(9, 18, 65) # target, canvas, stepnum, coordconv 3 + 3 + 1 + 2
+        self.actor = ResNet(9, 18, 13) # target, canvas, stepnum, coordconv 3 + 3 + 1 + 2
+        # self.actor_target = ResNet(9, 18, 65)
+        self.actor_target = ResNet(9, 18, 13)
         self.critic = ResNet_wobn(3 + 9, 18, 1) # add the last canvas for better prediction
         self.critic_target = ResNet_wobn(3 + 9, 18, 1) 
 
