@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.902
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ChojuGiga", "baseline\ChojuGiga.pyproj", "{D2AAA954-186B-4221-975D-221E12C45815}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "MakeFontImage", "MakeFontImage\MakeFontImage.pyproj", "{4C170303-6EA1-4316-8996-AD78C72094A3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D2AAA954-186B-4221-975D-221E12C45815}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2AAA954-186B-4221-975D-221E12C45815}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C170303-6EA1-4316-8996-AD78C72094A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C170303-6EA1-4316-8996-AD78C72094A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8631FE27-2A31-4446-BD7B-041B00C90D34}
+	EndGlobalSection
+EndGlobal

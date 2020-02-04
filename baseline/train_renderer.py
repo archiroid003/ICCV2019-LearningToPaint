@@ -2,13 +2,17 @@ import cv2
 import torch
 import numpy as np
 
+#import sys
+#sys.path.append('C:/work/1910_archiroid_DL/ICCV2019-LearningToPaint')
+#sys.path.append('C:/work/1910_archiroid_DL/ICCV2019-LearningToPaint/baseline')
+
 import torch.nn as nn
 import torch.nn.functional as F
 from utils.tensorboard import TensorBoard
 from Renderer.model import FCN
 from Renderer.stroke_gen import *
 
-writer = TensorBoard("../train_log/191104_renderer/")
+writer = TensorBoard("../train_log/200202_renderer/")
 import torch.optim as optim
 
 criterion = nn.MSELoss()
@@ -31,14 +35,15 @@ def save_model():
 
 def load_weights():
     # pretrained_dict = torch.load("../renderer.pkl")
-    pretrained_dict = torch.load("model/renderer.pkl")
+    pretrained_dict = torch.load("./model/renderer.pkl")
+    #pretrained_dict = torch.load("C:/work/1910_archiroid_DL/ICCV2019-LearningToPaint/model/renderer.pkl")
     model_dict = net.state_dict()
     pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
     model_dict.update(pretrained_dict)
     net.load_state_dict(model_dict)
 
 
-# load_weights()
+#load_weights()
 
 while step < 500000:
     net.train()
@@ -46,7 +51,7 @@ while step < 500000:
     ground_truth = []
     for i in range(batch_size):
         # f = np.random.uniform(0, 1, 10)
-        f = np.random.uniform(0, 1, 8)
+        f = np.random.uniform(0, 1, 3*3)
         train_batch.append(f)
         ground_truth.append(draw(f))
 
@@ -57,6 +62,7 @@ while step < 500000:
         train_batch = train_batch.cuda()
         ground_truth = ground_truth.cuda()
     gen = net(train_batch)
+
     optimizer.zero_grad()
     loss = criterion(gen, ground_truth)
     loss.backward()
@@ -64,10 +70,12 @@ while step < 500000:
     print(step, loss.item())
     if step < 200000:
         lr = 1e-4
-    elif step < 400000:
+    elif step < 300000:
         lr = 1e-5
-    else:
+    elif step < 400000:
         lr = 1e-6
+    else:
+        lr = 1e-7
     for param_group in optimizer.param_groups:
         param_group["lr"] = lr
     writer.add_scalar("train/loss", loss.item(), step)

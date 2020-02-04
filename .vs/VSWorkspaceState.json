@@ -1,8 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\baseline"
+    "\\baseline",
+    "\\baseline\\DRL",
+    "\\baseline\\Renderer"
   ],
-  "SelectedNode": "\\baseline\\test.py",
+  "SelectedNode": "\\baseline\\Renderer\\stroke_gen.py",
   "PreviewInSolutionExplorer": false
 }

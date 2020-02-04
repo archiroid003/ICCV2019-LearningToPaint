@@ -5,3 +5,7 @@ data/
 *.pkl
 
 output/*
+
+MakeFontImage/*
+
+train_log/*

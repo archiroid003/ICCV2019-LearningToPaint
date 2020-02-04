@@ -3,13 +3,14 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.optim import Adam, SGD
-from Renderer.model import *
+from Renderer.model import FCN
 from DRL.rpm import rpm
 from DRL.actor import *
 from DRL.critic import *
 from DRL.wgan import *
 from utils.util import *
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+import cv2
 
 coord = torch.zeros([1, 2, 128, 128])
 for i in range(128):
@@ -22,20 +23,31 @@ criterion = nn.MSELoss()
 
 Decoder = FCN()
 # Decoder.load_state_dict(torch.load('../renderer.pkl'))
-Decoder.load_state_dict(torch.load('model/renderer.pkl'))
+#Decoder.load_state_dict(torch.load('./model/renderer.pkl'))
+Decoder.load_state_dict(torch.load('./model/renderer.pkl'))
 
 def decode(x, canvas): # b * (10 + 3)
     # x = x.view(-1, 10 + 3)
-    x = x.view(-1, 10 + 3)
+    x = x.view(-1, 3*3)
     # draw only toumeido 1
     # x[:, 8:10] = 0.9
     # print(x[:, 8:10])
     # stroke = 1 - Decoder(x[:, :10])
-    stroke = 1 - Decoder(x[:, :8])
+
+    stroke = 1 - Decoder(x)
+
+    #cv2.imshow('img',stroke[0].cpu().numpy())
+    #cv2.waitKey(3000)
+
     stroke = stroke.view(-1, 128, 128, 1)
+
     # draw only white
     color_stroke = stroke * torch.ones(x[:, -3:].shape, device=device).view(-1, 1, 1, 3)
+
+    #color_stroke = stroke * torch.ones((x.shape[0],3), device=device).view(-1, 1, 1, 3)
+
     # color_stroke = stroke * x[:, -3:].view(-1, 1, 1, 3)
+
 
     stroke = stroke.permute(0, 3, 1, 2)
     color_stroke = color_stroke.permute(0, 3, 1, 2)
@@ -46,6 +58,8 @@ def decode(x, canvas): # b * (10 + 3)
     # for i in range(5):
     for i in range(1):
         canvas = canvas * (1 - stroke[:, i]) + color_stroke[:, i]
+
+    #return None
     return canvas
 
 def cal_trans(s, t):
@@ -61,9 +75,11 @@ class DDPG(object):
         self.batch_size = batch_size        
 
         # self.actor = ResNet(9, 18, 65) # target, canvas, stepnum, coordconv 3 + 3 + 1 + 2
-        self.actor = ResNet(9, 18, 13) # target, canvas, stepnum, coordconv 3 + 3 + 1 + 2
+        #self.actor = ResNet(9, 18, 13) # target, canvas, stepnum, coordconv 3 + 3 + 1 + 2
+        self.actor = ResNet(9, 18, 3*3) # target, canvas, stepnum, coordconv 3 + 3 + 1 + 2
         # self.actor_target = ResNet(9, 18, 65)
-        self.actor_target = ResNet(9, 18, 13)
+        #self.actor_target = ResNet(9, 18, 13)
+        self.actor_target = ResNet(9, 18, 3*3)
         self.critic = ResNet_wobn(3 + 9, 18, 1) # add the last canvas for better prediction
         self.critic_target = ResNet_wobn(3 + 9, 18, 1) 
 

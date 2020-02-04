@@ -10,6 +10,7 @@ from utils.util import *
 from PIL import Image
 from torchvision import transforms, utils
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+import os
 
 aug = transforms.Compose(
             [transforms.ToPILImage(),
@@ -28,24 +29,33 @@ class Paint:
     def __init__(self, batch_size, max_step):
         self.batch_size = batch_size
         self.max_step = max_step
-        self.action_space = (13)
+        self.action_space = (3*3)
         self.observation_space = (self.batch_size, width, width, 7)
         self.test = False
         
     def load_data(self):
         # CelebA
         global train_num, test_num
-        for i in range(200000):
+
+        load_path = 'C:/work/1910_archiroid_DL/ICCV2019-LearningToPaint/MakeFontImage/resize_png'
+        files = os.listdir(load_path)
+        files_file = [f for f in files if os.path.isfile(os.path.join(load_path, f))]
+        #for i in range(200000):
+        for i,fname in enumerate(files_file):
             # img_id = '%06d' % (i + 1)
             # img_id = str(i+1)
-            img_id = '%05d' % (i + 1)
+            #img_id = '%05d' % (i + 1)
             try:
                 # img = cv2.imread('./data/img_align_celeba/' + img_id + '.jpg', cv2.IMREAD_UNCHANGED)
                 # img = cv2.imread('./data/mnist/' + img_id + '.png')
-                img = cv2.imread('./data/kkanji/train-images-idx3-ubyte_folder/' + img_id + '.png')
+                img = cv2.imread(os.path.join(load_path, fname), cv2.IMREAD_UNCHANGED)
+                img = img[:,:,-1:].repeat(3, axis=2)
                 img = cv2.resize(img, (width, width))
                 # print(img.shape)
-                if i > 2000:                
+                #if i > 2000:   
+                #if i > 1200:
+                #    break
+                if i > 200:                
                     train_num += 1
                     img_train.append(img)
                 else:
