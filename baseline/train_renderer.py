@@ -70,12 +70,12 @@ while step < 500000:
     print(step, loss.item())
     if step < 200000:
         lr = 1e-4
-    elif step < 300000:
-        lr = 1e-5
+    #elif step < 300000:
+    #    lr = 1e-5
     elif step < 400000:
-        lr = 1e-6
+        lr = 1e-5
     else:
-        lr = 1e-7
+        lr = 1e-6
     for param_group in optimizer.param_groups:
         param_group["lr"] = lr
     writer.add_scalar("train/loss", loss.item(), step)
