@@ -12,7 +12,7 @@ from utils.tensorboard import TensorBoard
 from Renderer.model import FCN
 from Renderer.stroke_gen import *
 
-writer = TensorBoard("../train_log/200202_renderer/")
+writer = TensorBoard("../train_log/200204_renderer/")
 import torch.optim as optim
 
 criterion = nn.MSELoss()
@@ -51,7 +51,7 @@ while step < 500000:
     ground_truth = []
     for i in range(batch_size):
         # f = np.random.uniform(0, 1, 10)
-        f = np.random.uniform(0, 1, 3*3)
+        f = np.random.uniform(0, 1, 3*4)
         train_batch.append(f)
         ground_truth.append(draw(f))
 
