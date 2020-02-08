@@ -24,7 +24,7 @@ criterion = nn.MSELoss()
 Decoder = FCN()
 # Decoder.load_state_dict(torch.load('../renderer.pkl'))
 #Decoder.load_state_dict(torch.load('./model/renderer.pkl'))
-Decoder.load_state_dict(torch.load('./model/renderer.pkl'))
+Decoder.load_state_dict(torch.load('./model/200204_spline_3pt_renderer.pkl'))
 
 def decode(x, canvas): # b * (10 + 3)
     # x = x.view(-1, 10 + 3)
