@@ -39,7 +39,8 @@ class Paint:
         # CelebA
         global train_num, test_num
 
-        load_path = 'C:/work/1910_archiroid_DL/ICCV2019-LearningToPaint/MakeFontImage/resize_png'
+        #load_path = 'C:/work/1910_archiroid_DL/ICCV2019-LearningToPaint/MakeFontImage/resize_png'
+        load_path = '/home/ubuntu/ICCV2019-LearningToPaint/MakeFontImage/resize_png'
         files = os.listdir(load_path)
         files_file = [f for f in files if os.path.isfile(os.path.join(load_path, f))]
         #for i in range(200000):
