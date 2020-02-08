@@ -12,7 +12,7 @@ from utils.tensorboard import TensorBoard
 from Renderer.model import FCN
 from Renderer.stroke_gen import *
 
-writer = TensorBoard("../train_log/200204_renderer/")
+writer = TensorBoard("../train_log/200208_renderer/")
 import torch.optim as optim
 
 criterion = nn.MSELoss()
@@ -69,9 +69,9 @@ while step < 500000:
     optimizer.step()
     print(step, loss.item())
     if step < 200000:
+        lr = 1e-3
+    if step < 300000:
         lr = 1e-4
-    #elif step < 300000:
-    #    lr = 1e-5
     elif step < 400000:
         lr = 1e-5
     else:
