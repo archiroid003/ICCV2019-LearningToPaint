@@ -56,6 +56,7 @@ def decode(x, canvas): # b * (10 + 3)
     # color_stroke = color_stroke.view(-1, 5, 3, 128, 128)
     color_stroke = color_stroke.view(-1, 1, 3, 128, 128)
     # for i in range(5):
+
     for i in range(1):
         canvas = canvas * (1 - stroke[:, i]) + color_stroke[:, i]
 
@@ -76,10 +77,10 @@ class DDPG(object):
 
         # self.actor = ResNet(9, 18, 65) # target, canvas, stepnum, coordconv 3 + 3 + 1 + 2
         #self.actor = ResNet(9, 18, 13) # target, canvas, stepnum, coordconv 3 + 3 + 1 + 2
-        self.actor = ResNet(9, 18, 3*3) # target, canvas, stepnum, coordconv 3 + 3 + 1 + 2
+        self.actor = ResNet(9, 18, 3*2) # target, canvas, stepnum, coordconv 3 + 3 + 1 + 2
         # self.actor_target = ResNet(9, 18, 65)
         #self.actor_target = ResNet(9, 18, 13)
-        self.actor_target = ResNet(9, 18, 3*3)
+        self.actor_target = ResNet(9, 18, 3*2)
         self.critic = ResNet_wobn(3 + 9, 18, 1) # add the last canvas for better prediction
         self.critic_target = ResNet_wobn(3 + 9, 18, 1) 
 
@@ -105,6 +106,8 @@ class DDPG(object):
         
         self.state = [None] * self.env_batch # Most recent state
         self.action = [None] * self.env_batch # Most recent action
+        self.pre_action = None
+
         self.choose_device()        
 
     def play(self, state, target=False):
@@ -159,6 +162,9 @@ class DDPG(object):
         
         with torch.no_grad():
             next_action = self.play(next_state, True)
+            #next_action = to_numpy(next_action)
+            next_action = torch.cat([action[:, 6:], next_action], 1)
+
             target_q, _ = self.evaluate(next_state, next_action, True)
             target_q = self.discount * ((1 - terminal.float()).view(-1, 1)) * target_q
                 
@@ -170,7 +176,13 @@ class DDPG(object):
         value_loss.backward(retain_graph=True)
         self.critic_optim.step()
 
+        memory_action = action.clone()
+
         action = self.play(state)
+
+        #action = to_numpy(action)
+        action = torch.cat([memory_action[:, :3], action], 1)
+
         pre_q, _ = self.evaluate(state.detach(), action)
         policy_loss = -pre_q.mean()
         self.actor.zero_grad()
@@ -207,6 +219,14 @@ class DDPG(object):
         if noise_factor > 0:        
             action = self.noise_action(noise_factor, state, action)
         self.train()
+
+        if self.pre_action is not None:
+            action = np.concatenate([self.pre_action[:, 6:], action], 1)
+            self.pre_action = np.array(action)
+        else:
+            action = np.concatenate([action[:, :3], action], 1)
+            self.pre_action = np.array(action)
+
         self.action = action
         if return_fix:
             return action
@@ -215,6 +235,8 @@ class DDPG(object):
     def reset(self, obs, factor):
         self.state = obs
         self.noise_level = np.random.uniform(0, factor, self.env_batch)
+
+        self.pre_action = None
 
     def load_weights(self, path):
         if path is None: return

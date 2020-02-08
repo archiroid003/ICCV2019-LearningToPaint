@@ -9,7 +9,7 @@ from utils.tensorboard import TensorBoard
 import time
 
 exp = os.path.abspath('.').split('\\')[-1]
-writer = TensorBoard('../train_log/{}'.format("200204"))
+writer = TensorBoard('../train_log/{}'.format("200208"))
 # os.system('ln -sf ../train_log/{} ./log'.format(exp))
 os.system('mkdir ./model')
 

@@ -29,9 +29,11 @@ class Paint:
     def __init__(self, batch_size, max_step):
         self.batch_size = batch_size
         self.max_step = max_step
-        self.action_space = (3*3)
+        self.action_space = (3*2)
         self.observation_space = (self.batch_size, width, width, 7)
         self.test = False
+        
+        self.pre_action = None
         
     def load_data(self):
         # CelebA
@@ -108,6 +110,13 @@ class Paint:
         return (s.transpose(0, 3) * t).transpose(0, 3)
     
     def step(self, action):
+        #if self.stepnum > 0:
+            
+        #else:
+        #    action
+
+        #self.pre_action = action.view(-1, 3*3)
+
         self.canvas = (decode(action, self.canvas.float() / 255) * 255).byte()
         self.stepnum += 1
         ob = self.observation()
@@ -116,7 +125,8 @@ class Paint:
         return ob.detach(), reward, np.array([done] * self.batch_size), None
 
     def cal_dis(self):
-        return (((self.canvas.float() - self.gt.float()) / 255) ** 2).mean(1).mean(1).mean(1)
+        #return (((self.canvas.float() - self.gt.float()) / 255) ** 2).mean(1).mean(1).mean(1)
+        return (((self.canvas.float() - self.gt.float()) / 255)).mean(1).mean(1).mean(1)
     
     def cal_reward(self):
         dis = self.cal_dis()

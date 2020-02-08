@@ -8,7 +8,7 @@ class FCN(nn.Module):
         super(FCN, self).__init__()
         #self.fc1 = (nn.Linear(8, 512))
         #self.fc1 = (nn.Linear(3*12, 512))
-        self.fc1 = (nn.Linear(3*4, 512))
+        self.fc1 = (nn.Linear(3*3, 512))
         # self.fc1 = (nn.Linear(10, 512))
         self.fc2 = (nn.Linear(512, 1024))
         self.fc3 = (nn.Linear(1024, 2048))
