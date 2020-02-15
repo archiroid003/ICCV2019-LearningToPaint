@@ -126,8 +126,8 @@ class Paint:
         return ob.detach(), reward, np.array([done] * self.batch_size), None
 
     def cal_dis(self):
-        #return (((self.canvas.float() - self.gt.float()) / 255) ** 2).mean(1).mean(1).mean(1)
-        return (((self.canvas.float() - self.gt.float()) / 255)).mean(1).mean(1).mean(1)
+        return (((self.canvas.float() - self.gt.float()) / 255) ** 2).mean(1).mean(1).mean(1)
+        #return (((self.canvas.float() - self.gt.float()) / 255)).mean(1).mean(1).mean(1)
     
     def cal_reward(self):
         dis = self.cal_dis()
